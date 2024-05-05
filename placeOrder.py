@@ -1,9 +1,9 @@
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import MarketOrderRequest
 
+import config
 
-
-trading_client = TradingClient('PKDDA61X3SOWD31DTDXF', 'FTlc4NHJ6Fp36BjFgdY8lElRdyeTjhgFOwEcdRD0', paper=True)
+trading_client = TradingClient(config.public,config.secret paper=True)
 
 # preparing market order
 def prepareOrder (symbol, qty, side, tif):
