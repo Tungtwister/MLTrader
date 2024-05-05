@@ -2,7 +2,9 @@ from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import GetAssetsRequest
 from alpaca.trading.enums import AssetClass
 
-trading_client = TradingClient('PKDDA61X3SOWD31DTDXF', 'FTlc4NHJ6Fp36BjFgdY8lElRdyeTjhgFOwEcdRD0')
+import config
+
+trading_client = TradingClient(config.public, config.secret)
 
 # Get our account information.
 account = trading_client.get_account()
