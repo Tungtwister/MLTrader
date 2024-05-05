@@ -78,16 +78,17 @@ class StrategyLearner(object):
             ed=dt.datetime(2009, 1, 1),
             sv=10000
     ):
-
+        lookback_window = 50
         today = datetime.now().date()
         yesterday = today - timedelta(days=1)
         yearAgo = today - timedelta(days=365)
+        lookback = yearAgo - timedelta(days=lookback_window)
 
         # Creating request object
         request_params = StockBarsRequest(
             symbol_or_symbols=["AAPL"],
             timeframe=TimeFrame.Day,
-            start=yearAgo,
+            start=lookback,
             end=yesterday
         )
 
@@ -103,8 +104,13 @@ class StrategyLearner(object):
         momentum = ind.calc_momentum(data_df, 25)
         ppo_histo, ppo, signal_line = ind.calc_ppo(data_df)
 
-        concat_df = pd.concat([sma_ratio, bbp], axis=1)
-        print(concat_df)
+        indicator_df = pd.concat([sma_ratio, bbp, momentum, ppo_histo], axis=1)
+        indicator_df.columns = ['SMA', 'BBP', 'MOM', 'PPO']
+        indicator_df = indicator_df.reset_index(level=[0])
+        indicator_df = indicator_df.drop(columns="symbol")
+        indicator_df.index =  indicator_df.index.tz_localize(None)
+        indicator_df = indicator_df.loc[yearAgo:]
+        print(indicator_df)
         return 1
 
     def y_train(self, indicators, trades, lookahead, symbol):
