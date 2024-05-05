@@ -1,3 +1,3 @@
-API_SECRET: test ignored
+API_SECRET: test ignored 2
 
 API_KEY: test
