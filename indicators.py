@@ -35,15 +35,18 @@ def calc_momentum(prices, N):
 def calc_stochastic(high, low, close, adj_close, window = 14):
     #formula for the stochastic oscillator
     #k = (c-L14)/(H14 - L14) * 100 reference: https://www.investopedia.com/terms/s/stochasticoscillator.asp
-    multiplier = adj_close / close #calculating multiplier to discern adjusted costs
+    if adj_close is None:
+        adj_close = close
+
+    multiplier = adj_close / close 
     adj_high = high * multiplier
     adj_low = low * multiplier
 
     low_low = adj_low.rolling(window=window).min()
     high_high = adj_high.rolling(window=window).max()
 
-    k = ((adj_close - low_low) / (high_high - low_low)) * 100
-
+    # Add a small epsilon (1e-8) to avoid DivisionByZero errors if high == low
+    k = ((adj_close - low_low) / (high_high - low_low + 1e-8)) * 100
     return k
 
 def calc_EMA(values, window):

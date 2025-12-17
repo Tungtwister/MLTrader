@@ -28,5 +28,28 @@ bars = stock_historical_data_client.get_stock_bars(req)
 df = bars.df
 
 # Display the first few rows
-print(df.head())
-print(f"Total rows: {len(df)}")
+# print(df.tail())
+# print(f"Total rows: {len(df)}")
+
+# 1. Define your "Profit Threshold"
+# 0.001 means 0.1%. If the stock goes up less than this, we stay in cash (0).
+THRESHOLD = 0.001 
+
+# 2. Calculate Tomorrow's Return
+# We shift the 'close' column up by 1 (-1) to align tomorrow's price with today's row.
+df['next_close'] = df['close'].shift(-1)
+df['next_return'] = (df['next_close'] - df['close']) / df['close']
+
+# 3. Create the Binary Target
+# 1 = Profitable Buy, 0 = Hold/Sell
+df['Target'] = (df['next_return'] > THRESHOLD).astype(int)
+
+# 4. Drop the last row (it has NaN because there is no 'tomorrow' for it)
+df.dropna(subset=['next_close'], inplace=True)
+
+# --- Verification ---
+print("Target Distribution:")
+print(df['Target'].value_counts(normalize=True))
+
+print("\nFirst 5 rows with Targets:")
+print(df.tail(20))
