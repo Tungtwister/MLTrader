@@ -3,7 +3,7 @@ from alpaca.trading.requests import MarketOrderRequest
 
 import config
 
-trading_client = TradingClient(config.public,config.secret paper=True)
+trading_client = TradingClient(config.public,config.secret,paper=True)
 
 # preparing market order
 def prepareOrder (symbol, qty, side, tif):

@@ -1,46 +1,32 @@
-import pandas as pd
-import placeOrder as po
-import indicators as ind
-import config
-import StrategyLearner as sl
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
-from alpaca.trading.enums import OrderSide, TimeInForce
+import config
 
-client = StockHistoricalDataClient(config.public,config.secret)
+# 1. Setup the Historical Data Client (Use your API keys)
+stock_historical_data_client = StockHistoricalDataClient(config.public, config.secret)
 
-today = datetime.now().date()
-yesterday = today - timedelta(days=1)
-yearAgo = today - timedelta(days=365)
+# 2. Define the lookback period (2 years)
+# We use New York time to match market hours
+now = datetime.now(ZoneInfo("America/New_York"))
+yesterday = now - timedelta(days=1)
+start_date = now - timedelta(days=365 * 2) 
 
-# Creating request object
-request_params = StockBarsRequest(
-  symbol_or_symbols=["AAPL"],
-  timeframe=TimeFrame.Day,
-  start=yearAgo,
-  end=yesterday
+# 3. Create the Request
+# We change the timeframe to 'Day' because 2 years of minute/hour data is very large
+req = StockBarsRequest(
+    symbol_or_symbols=["SPY"],
+    timeframe=TimeFrame.Day,
+    start=start_date,
+    end=yesterday
 )
 
-# Retrieve daily bars for Bitcoin in a DataFrame and printing it
-btc_bars = client.get_stock_bars(request_params)
+# 4. Fetch the data and convert to a Pandas DataFrame
+bars = stock_historical_data_client.get_stock_bars(req)
+df = bars.df
 
-# Convert to dataframe
-data_df = btc_bars.df
-
-close = data_df["close"]
-# print(close)
-
-# if(smaRatio.iloc[-1] >= 0.05):
-#   order = po.prepareOrder(symbol="AAPL", qty=10, side=OrderSide.SELL, tif=TimeInForce.GTC)
-#   po.submitOrder(order)
-# elif(smaRatio.iloc[-1] < -0.05):
-#   order = po.prepareOrder(symbol="AAPL", qty=10, side=OrderSide.BUY, tif=TimeInForce.GTC)
-#   po.submitOrder(order)
-
-
-# order = po.prepareOrder(symbol="AAPL", qty=10, side=OrderSide.BUY, tif=TimeInForce.GTC)
-# po.submitOrder(order)
-
-learner = sl.StrategyLearner(verbose=False, impact=0.005, commission=9.95)  # constructor
+# Display the first few rows
+print(df.head())
+print(f"Total rows: {len(df)}")

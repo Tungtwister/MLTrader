@@ -111,7 +111,7 @@ class StrategyLearner(object):
         indicator_df.index =  indicator_df.index.tz_localize(None)
         indicator_df = indicator_df.loc[yearAgo:]
         print(indicator_df)
-        return 1
+        return indicator_df
 
     def y_train(self, indicators, trades, lookahead, symbol):
         ret = (trades.shift(-lookahead) / trades) - 1.0
