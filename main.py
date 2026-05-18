@@ -96,7 +96,7 @@ def execute_trade(symbol: str, desired_delta: int, current_qty: int) -> None:
 
     if desired_dir == current_dir:
         state = "long" if desired_dir > 0 else "short" if desired_dir < 0 else "flat"
-        print(f"[{symbol}] No trade -already {state}.")
+        print(f"[{symbol}] No trade - already {state}.")
         return
 
     # Close any existing position first

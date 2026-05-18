@@ -45,7 +45,7 @@ def calc_stochastic(high, low, close, adj_close, window = 14):
     low_low = adj_low.rolling(window=window).min()
     high_high = adj_high.rolling(window=window).max()
 
-    # Add a small epsilon (1e-8) to avoid DivisionByZero errors if high == low
+    # Add a small epsilon (1e-8) to avoid DivisionByZero errors if high == lowgit
     k = ((adj_close - low_low) / (high_high - low_low + 1e-8)) * 100
     return k
 
