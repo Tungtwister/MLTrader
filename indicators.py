@@ -62,6 +62,30 @@ def calc_ppo(prices, window1 = 12, window2 = 26, sig_window = 9):
     ppo_histo = ppo - signal_line
     return ppo_histo, ppo, signal_line
 
+def calc_atr_pct(high, low, close, window=14):
+    """
+    Average True Range as a percentage of close price.
+    Measures volatility normalised to price level so it's
+    comparable across different symbols and time periods.
+    """
+    prev_close = close.shift(1)
+    tr = pd.concat([
+        high - low,
+        (high - prev_close).abs(),
+        (low  - prev_close).abs(),
+    ], axis=1).max(axis=1)
+    atr = tr.rolling(window=window).mean()
+    return atr / close  # normalised: ~0.005–0.02 for typical stocks
+
+def calc_volume_ratio(volume, window=20):
+    """
+    Today's volume relative to its N-day rolling average.
+    > 1.0  = above-average volume (confirms price moves)
+    < 1.0  = below-average volume (weak conviction)
+    """
+    avg_vol = volume.rolling(window=window).mean()
+    return volume / avg_vol
+
 def test_code():
     pass
 
